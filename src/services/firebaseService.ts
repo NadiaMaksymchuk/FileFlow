@@ -81,12 +81,8 @@ export class FirebaseService implements FirebaseServiceInterface{
               if (res.statusCode === 200) {
                 const firebaseAuthResponce: FirebaseAuthResponse = JSON.parse(responseData);
 
-                const response = new ApiResponse(HttpStatusCode.Created, firebaseAuthResponce, 'User signed up successfully!');
+                const response = new ApiResponse(HttpStatusCode.OK, firebaseAuthResponce, 'User signed in successfully!');
                 resolve(response);
-              } else {
-                const errorMessage = JSON.parse(responseData)?.error?.message || 'Unknown error';
-                console.error('Error signing in:', errorMessage);
-                reject(new Error(errorMessage));
               }
             });
           });

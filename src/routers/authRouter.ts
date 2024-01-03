@@ -1,4 +1,3 @@
-import { firebaseAuthMiddleware } from "../middleware/authMiddleware";
 import Router from "../../library/router";
 import { AuthController } from "../conrollers/authController";
 
@@ -8,11 +7,5 @@ const authController = new AuthController();
 
 router.post('/api/signIn', authController.signIn);
 router.post('/api/signUp', authController.signUp);
-
-router.get('/protected', log);
-
-function log() {
-    console.log("eee");
-}
 
 export = router;

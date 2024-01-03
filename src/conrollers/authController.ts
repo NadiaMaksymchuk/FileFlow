@@ -2,7 +2,8 @@ import { FirebaseService } from "../services/firebaseService";
 import { Request } from '../../library/interfaces/request';
 import { Response } from '../../library/interfaces/response';
 import { AuthDto } from "../dtos/auth/authDto";
-import { FirebaseAuthResponse } from "src/dtos/auth/firebaseAuthResponce";
+import ApiResponse from "../utils/apiResponce";
+import { HttpStatusCode } from "../enums/httpStatusCode";
 
 export class AuthController {
     private service = new FirebaseService();
