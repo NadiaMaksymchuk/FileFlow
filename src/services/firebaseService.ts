@@ -13,7 +13,7 @@ export class FirebaseService implements FirebaseServiceInterface{
     private signUpUrl = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${this.firebaseApiKey}`;
     private signInUrl = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${this.firebaseApiKey}`;
     
-    async signUp(userCredentialDto: AuthDto): Promise<ApiResponse<FirebaseAuthResponse>> {
+    async signUp(userCredentialDto: AuthDto): Promise<ApiResponse<string>> {
         const requestData = JSON.stringify({
           email: userCredentialDto.email,
           password: userCredentialDto.password,
@@ -27,7 +27,7 @@ export class FirebaseService implements FirebaseServiceInterface{
           },
         };
       
-        return new Promise<ApiResponse<FirebaseAuthResponse>>((resolve, reject) => {
+        return new Promise<ApiResponse<string>>((resolve, reject) => {
           const req = https.request(this.signUpUrl, options, (res) => {
             let responseData = '';
       
@@ -37,9 +37,9 @@ export class FirebaseService implements FirebaseServiceInterface{
       
             res.on('end', () => {
               if (res.statusCode === 200) {
-                const firebaseAuthResponce: FirebaseAuthResponse = JSON.parse(responseData);
+                const {idToken} = JSON.parse(responseData) as Pick<FirebaseAuthResponse, keyof FirebaseAuthResponse>;
 
-                const response = new ApiResponse(HttpStatusCode.OK, firebaseAuthResponce, 'User signed up successfully!');
+                const response = new ApiResponse(HttpStatusCode.OK, idToken, 'User signed up successfully!');
                 resolve(response);
               }
             });
@@ -55,7 +55,7 @@ export class FirebaseService implements FirebaseServiceInterface{
         });
       }
 
-      async signIn(userCredentialDto: AuthDto): Promise<ApiResponse<FirebaseAuthResponse>> {
+      async signIn(userCredentialDto: AuthDto): Promise<ApiResponse<string>> {
         const requestData = JSON.stringify({
           email: userCredentialDto.email,
           password: userCredentialDto.password,
@@ -69,7 +69,7 @@ export class FirebaseService implements FirebaseServiceInterface{
           },
         };
       
-        return new Promise<ApiResponse<FirebaseAuthResponse>>((resolve, reject) => {
+        return new Promise<ApiResponse<string>>((resolve, reject) => {
           const req = https.request(this.signInUrl, options, (res) => {
             let responseData = '';
       
@@ -79,9 +79,9 @@ export class FirebaseService implements FirebaseServiceInterface{
       
             res.on('end', () => {
               if (res.statusCode === 200) {
-                const firebaseAuthResponce: FirebaseAuthResponse = JSON.parse(responseData);
+                const { idToken } = JSON.parse(responseData) as Pick<FirebaseAuthResponse, keyof FirebaseAuthResponse>;
 
-                const response = new ApiResponse(HttpStatusCode.OK, firebaseAuthResponce, 'User signed in successfully!');
+                const response = new ApiResponse(HttpStatusCode.OK, idToken, 'User signed in successfully!');
                 resolve(response);
               }
             });

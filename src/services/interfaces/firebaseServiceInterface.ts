@@ -3,6 +3,6 @@ import { FirebaseAuthResponse } from "../../dtos/auth/firebaseAuthResponce";
 import ApiResponse from "../../utils/apiResponce";
 
 export interface FirebaseServiceInterface {
-    signUp(userCredentialDto: AuthDto): Promise<ApiResponse<FirebaseAuthResponse>>;
-    signIn(userCredentialDto: AuthDto): Promise<ApiResponse<FirebaseAuthResponse>>;
+    signUp(userCredentialDto: AuthDto): Promise<ApiResponse<string>>;
+    signIn(userCredentialDto: AuthDto): Promise<ApiResponse<string>>;
 }
