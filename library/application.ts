@@ -6,7 +6,7 @@ import { HttpMethod } from './types/httpMethod';
 class Application {
     private emitter: EventEmitter;
     private server: http.Server;
-    private middlewares: any[];
+    private middlewares: Function[];
 
     constructor() {
         this.emitter = new EventEmitter();
@@ -14,7 +14,7 @@ class Application {
         this.middlewares = [];
     }
 
-    use(middleware: any): void {
+    use(middleware: Function): void {
         this.middlewares.push(middleware);
     }
 
@@ -38,6 +38,8 @@ class Application {
         return http.createServer((req, res) => {
             let body = '';
 
+            this.connectGlobalCatchingExeptions(res);
+
             req.on('data', (chunk) => {
                 body += chunk;
             });
@@ -60,6 +62,18 @@ class Application {
 
     private getRouteMask(path: string, method: HttpMethod): string {
         return `[${path}]:[${method}]`;
+    }
+
+    private connectGlobalCatchingExeptions(res: http.ServerResponse<http.IncomingMessage>) {
+        process.on('uncaughtException', function (err) {
+            console.log('UNCAUGHT EXCEPTION - keeping process alive:', err); 
+
+            res.statusCode = 500;
+
+            res.write(err.message);
+
+            res.end();
+        });
     }
 }
 
