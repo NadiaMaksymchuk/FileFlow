@@ -24,7 +24,7 @@ class Router {
                 handler(req, res);
             } catch (error) {
                 res.statusCode = 500;
-                res.end('Internal Server Error');
+                res.end(error.message);
             }
         };
 

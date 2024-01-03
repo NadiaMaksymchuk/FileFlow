@@ -2,7 +2,6 @@ import * as https from 'https';
 import { HttpStatusCode } from '../enums/httpStatusCode';
 import ApiResponse from '../utils/apiResponce';
 import * as dotenv from 'dotenv';
-import { FirebaseAuthResponse } from '../dtos/auth/firebaseAuthResponce';
 import { AuthDto } from '../dtos/auth/authDto';
 import { FirebaseServiceInterface } from './interfaces/firebaseServiceInterface';
 
@@ -37,7 +36,7 @@ export class FirebaseService implements FirebaseServiceInterface{
       
             res.on('end', () => {
               if (res.statusCode === 200) {
-                const {idToken} = JSON.parse(responseData) as Pick<FirebaseAuthResponse, keyof FirebaseAuthResponse>;
+                const { idToken } = JSON.parse(responseData);
 
                 const response = new ApiResponse(HttpStatusCode.OK, idToken, 'User signed up successfully!');
                 resolve(response);
@@ -79,7 +78,7 @@ export class FirebaseService implements FirebaseServiceInterface{
       
             res.on('end', () => {
               if (res.statusCode === 200) {
-                const { idToken } = JSON.parse(responseData) as Pick<FirebaseAuthResponse, keyof FirebaseAuthResponse>;
+                const { idToken } = JSON.parse(responseData);
 
                 const response = new ApiResponse(HttpStatusCode.OK, idToken, 'User signed in successfully!');
                 resolve(response);

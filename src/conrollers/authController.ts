@@ -7,14 +7,14 @@ export class AuthController {
     private service = new FirebaseService();
 
     public signIn = async (req: Request, res: Response) => {
-        const response = await this.service.signIn(req.body as AuthDto);
+        const response = await this.service.signIn(req.body as unknown as AuthDto);
 
-        res.send(response.status, response);
+        res.send(response);
     }
 
     public signUp = async (req: Request, res: Response) => {
-        const response = await this.service.signUp(req.body as AuthDto);
+        const response = await this.service.signUp(req.body as unknown as AuthDto);
 
-        res.send(response.status, response);
+        res.send(response);
     }
 }

@@ -2,8 +2,8 @@ import { Response } from '../interfaces/response';
 import { Request } from '../interfaces/request'
 
 export default (req: Request, res: Response) => {
-  res.send = (statusCode, data) => {
-    res.writeHead(statusCode, {
+  res.send = (data) => {
+    res.writeHead(data.status, {
       'Content-Type': 'application/json',
     });
 

@@ -14,20 +14,22 @@ export const firebaseAuthMiddleware = async (
 
   if (!token) {
     const response = new ApiResponse(HttpStatusCode.Unauthorized, null, "Unauthorized - Missing token");
-    return res.send(response.status, response);
+    return res.send(response);
   }
 
   try {
     const decodedToken = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
-    
+
     const currentTimestamp = Math.floor(Date.now() / 1000); 
 
 
     if (currentTimestamp > decodedToken.exp) {
       const response = new ApiResponse(HttpStatusCode.Unauthorized, null, "Unauthorized - Expired token");
-      return res.send(response.status, response);
+      return res.send(response);
     }
   } catch (error) {
-    res.send(HttpStatusCode.Unauthorized, error.message);
+    const response = new ApiResponse(HttpStatusCode.Unauthorized, null, error.message);
+
+    return res.send(response);
   }
 };
