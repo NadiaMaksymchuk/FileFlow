@@ -27,6 +27,11 @@ export const firebaseAuthMiddleware = async (
       const response = new ApiResponse(HttpStatusCode.Unauthorized, null, "Unauthorized - Expired token");
       return res.send(response);
     }
+
+    currentUser = {
+      id: decodedToken.user_id,
+      email: decodedToken.email
+    }
   } catch (error) {
     const response = new ApiResponse(HttpStatusCode.Unauthorized, null, error.message);
 

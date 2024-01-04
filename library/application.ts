@@ -29,34 +29,41 @@ class Application {
         Object.keys(router.endpoints).forEach(path => {
             const endpoint = router.endpoints[path];
             Object.keys(endpoint).forEach((method: HttpMethod) => {
-                this.emitter.on(this.getRouteMask(path, method), (req, res) => {
+                this.emitter.on(this.getRouteMask(path, method), async (req, res) => {
                     const handler = endpoint[method];
-                    handler(req, res);
+                    await handler(req, res);
                 });
             });
         });
     }
 
     private createServer(): http.Server {
-        return http.createServer(async (req, res) => {
+        return http.createServer((req, res) => {
+            const chunks: Buffer[] = [];
             let body = '';
 
             this.connectGlobalCatchingExeptions(res);
 
-            req.on('data', (chunk) => {
-                body += chunk;
-            });
-            if (req.url == '/fileupload') {
-                await storeFile(req);
-                res.end();
+            if(req.rawHeaders[req.rawHeaders.indexOf('Content-Type') + 1].includes('multipart/form-data')) {
+                req.on('data', (chunk) => {
+                    chunks.push(chunk);
+                });
+            }
+
+            if (req.rawHeaders[req.rawHeaders.indexOf('Content-Type') + 1].includes('application/json')) {
+                req.on('data', (data) => {
+                    body += data;
+                });
             }
 
             req.on('end', () => {
-                // if (body) {
-                //     (req as any).body = JSON.parse(body);
-                // }
+                if (chunks) {
+                    (req as any).body = chunks;
+                }
 
-
+                if (body) {
+                    (req as any).body = JSON.parse(body);
+                }
 
                 this.middlewares.forEach(middleware => middleware(req, res));
 
@@ -84,49 +91,25 @@ class Application {
             res.end();
         });
     }
+
+    private parseBody(req: http.IncomingMessage) {
+        const chunks: Buffer[] = [];
+        let body = '';
+
+        if(req.rawHeaders[req.rawHeaders.indexOf('Content-Type') + 1].includes('multipart/form-data')) {
+            req.on('data', (chunk) => {
+                chunks.push(chunk);
+            });
+        }
+
+        if (req.rawHeaders[req.rawHeaders.indexOf('Content-Type') + 1].includes('application/json')) {
+            req.on('data', (data) => {
+                body += data;
+            });
+        }
+
+        return chunks || body;
+    }
 }
 
 export default Application;
-
-async function storeFile(req: any): Promise<void> {
-    // Resolve path/to/temp/file
-    const temp: string = path.resolve(os.tmpdir(), 'temp' + Math.floor(Math.random() * 10));
-
-    // Create a promise to read data from the request
-    const requestDataPromise = new Promise<Buffer>((resolve, reject) => {
-        const chunks: Buffer[] = [];
-        req.on('data', (chunk: Buffer) => chunks.push(chunk));
-        req.on('end', () => resolve(Buffer.concat(chunks)));
-        req.on('error', (error: any) => reject(error));
-    });
-
-    try {
-        // Read data from the request
-        const requestData = await requestDataPromise;
-
-        // Write data to the temporary file
-        await fs.promises.writeFile(temp, requestData);
-
-        // Read the temporary file
-        const reader = await fs.promises.readFile(temp);
-
-        // Extract filename and boundary
-        const filename = reader.slice(reader.indexOf("filename=\"") + "filename=\"".length, reader.indexOf("\"\r\nContent-Type"));
-        const boundary = reader.slice(0, reader.indexOf('\r\n'));
-
-        // Extract content between boundaries
-        const content = reader.slice(
-            reader.indexOf('\r\n\r\n') + '\r\n\r\n'.length,
-            reader.lastIndexOf(boundary)
-        );
-
-        // Write the real file
-        await fs.promises.writeFile(filename.toString(), content);
-
-        // Delete the temporary file
-        await fs.promises.unlink(temp);
-    } catch (error) {
-        console.error('Error processing file:', error);
-        // Handle error as needed
-    }
-}

@@ -1,10 +1,12 @@
-import * as http from 'http';
-import * as fs from 'fs';
+import { Response } from '../../library/interfaces/response';
+import { Request } from '../../library/interfaces/request';
+import { FileService } from '../services/fileService';
 
 export class FileController {
-    handleFileUpload = (
-        req: http.IncomingMessage,
-        res: http.ServerResponse
-    ) => {
+    private fileService = new FileService();
+
+    handleFileUpload = async (req: Request, res: Response) => {
+        const response = await this.fileService.upload(req.body);
+        res.send(response);
     }
 };
