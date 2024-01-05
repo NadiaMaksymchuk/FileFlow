@@ -9,4 +9,12 @@ export class FileController {
         const response = await this.fileService.upload(req.body);
         res.send(response);
     }
+
+    getAllMyFiles = async (req: Request, res: Response) => {
+    }
+
+    deleteMyFile = async (req: Request, res: Response) => {
+        const response = await this.fileService.deleteMyFile(req.params["url"]);
+        res.send(response);
+    }
 };

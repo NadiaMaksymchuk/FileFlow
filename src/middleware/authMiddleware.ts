@@ -10,7 +10,7 @@ export const firebaseAuthMiddleware = async (
   req: Request,
   res: Response,
 ): Promise<void> => {
-  const token = req.rawHeaders[1]?.replace('Bearer ', '');
+  const token = req.rawHeaders[req.rawHeaders.indexOf('Authorization') + 1]?.replace('Bearer ', '');
 
   if (!token) {
     const response = new ApiResponse(HttpStatusCode.Unauthorized, null, "Unauthorized - Missing token");

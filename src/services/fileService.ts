@@ -11,7 +11,7 @@ export class FileService {
 
         await fs.promises.writeFile(temp, requestData);
 
-        const uploadFolder = await this.createFolder();
+        const uploadFolder = await this.getFolder();
 
         const reader = await fs.promises.readFile(temp);
 
@@ -40,6 +40,32 @@ export class FileService {
         return new ApiResponse(HttpStatusCode.Created, fileUrl, "Uploaded!");
     }
 
+    getMyAllFilles() {
+        const uploadFolder = path.resolve(__dirname, '../../uploads');
+
+      }
+
+    async deleteMyFile(fileUrl: string): Promise<ApiResponse<null>> {
+        const userId = fileUrl.split('_')[0];
+
+        if(currentUser.id !== userId) {
+            return new ApiResponse(HttpStatusCode.Forbidden, null, "Permission denied");
+        }
+
+        const filePath = path.join(await this.getFolder(), fileUrl);
+
+        try {
+            await fs.promises.unlink(filePath);
+        }
+        catch(error) {
+            if (error.code === 'ENOENT') {
+            return new ApiResponse(HttpStatusCode.NotFound, null, "Not found");
+            }
+        }
+
+        return new ApiResponse(HttpStatusCode.NoContent, null, "Deleted");
+    }
+
     private createUniqueFileUrl(filenameWithoutExtension: string): string {
         const currentDate = new Date();
         const fileExtension = path.extname(filenameWithoutExtension);
@@ -47,7 +73,7 @@ export class FileService {
         return `${currentUser.id}_${filenameWithoutExtension.split('.')[0]}_${currentDate.getTime()}${fileExtension}`;
     }
 
-    private async createFolder() {
+    private async getFolder() {
         const uploadFolder = path.resolve(__dirname, '../../uploads');
 
         await fs.promises.mkdir(uploadFolder, { recursive: true });
