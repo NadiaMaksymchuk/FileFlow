@@ -10,7 +10,7 @@ const app = new Application();
 
 
 app.use(parseUrl('http://localhost:5000'));
-app.use(parseJson);
+//app.use(parseJson);
 
 app.addRouter(authRouter);
 app.addRouter(fileRouter);

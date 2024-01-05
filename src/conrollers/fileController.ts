@@ -17,4 +17,9 @@ export class FileController {
         const response = await this.fileService.deleteMyFile(req.params["url"]);
         res.send(response);
     }
+
+    downloadMyFile = async (req: Request, res: Response) => {
+        const response = await this.fileService.downloadMyFile(req.params["url"]);
+        res.send(response);
+    }
 };

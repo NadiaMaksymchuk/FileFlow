@@ -26,9 +26,9 @@ class Application {
         Object.keys(router.endpoints).forEach(path => {
             const endpoint = router.endpoints[path];
             Object.keys(endpoint).forEach((method: HttpMethod) => {
-                this.emitter.on(this.getRouteMask(path, method), (req, res) => {
+                this.emitter.on(this.getRouteMask(path, method), async (req, res) => {
                     const handler = endpoint[method];
-                    handler(req, res);
+                    await handler(req, res);
                 });
             });
         });

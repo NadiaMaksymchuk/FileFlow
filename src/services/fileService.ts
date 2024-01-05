@@ -65,15 +65,19 @@ export class FileService {
         return new ApiResponse(HttpStatusCode.NoContent, null, "Deleted");
     }
 
-    async downloadMyFile(fileUrl: string) {
-        // const filePath = path.join(await this.getFolder(), fileUrl);
+    async downloadMyFile(fileUrl: string): Promise<ApiResponse<string>> {
+        const userId = fileUrl.split('_')[0];
+        
+        if(currentUser.id !== userId) {
+            return new ApiResponse(HttpStatusCode.Forbidden, null, "Permission denied");
+        }
+        
+        const filePath = path.join(await this.getFolder(), fileUrl);
 
-        // fs.readFile(filePath, (err, data) => {
-        //       res.setHeader('Content-Disposition', `attachment; filename=${fileUrl}`);
-        //       res.writeHead(200, { 'Content-Type': 'application/octet-stream' });
-        //       res.end(data);
-        //   });
-        // }
+        const data = await fs.promises.readFile(filePath, 'binary');
+        const response = new ApiResponse(HttpStatusCode.OK, data, 'Downloaded');
+
+        return response;
     }
 
     private createUniqueFileUrl(filenameWithoutExtension: string): string {
