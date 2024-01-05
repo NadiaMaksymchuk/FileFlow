@@ -40,14 +40,6 @@ class Application {
             let body = '';
 
             this.connectGlobalCatchingExeptions(res);
-
-            if ((req as any).pathName = '/download') {
-                fs.readFile(`D:/SolvdLaba/FileFlow/uploads/agYT9s9ITwh44WbbIEOIpaF2rkG3_photo_2023-06-30_22-13-46_1704448871037.jpg`, (data) => {
-                    res.setHeader('Content-Disposition', `attachment; filename=agYT9s9ITwh44WbbIEOIpaF2rkG3_photo_2023-06-30_22-13-46_1704448871037.jpg`);
-                    res.writeHead(200, { 'Content-Type': 'application/octet-stream' });
-                    res.end(data);
-                });
-            }
             
             if (req.rawHeaders[req.rawHeaders.indexOf('Content-Type') + 1].includes('multipart/form-data')) {
                 req.on('data', (chunk) => {

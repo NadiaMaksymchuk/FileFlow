@@ -41,9 +41,8 @@ export class FileService {
     }
 
     getMyAllFilles() {
-        const uploadFolder = path.resolve(__dirname, '../../uploads');
 
-      }
+    }
 
     async deleteMyFile(fileUrl: string): Promise<ApiResponse<null>> {
         const userId = fileUrl.split('_')[0];
@@ -59,11 +58,22 @@ export class FileService {
         }
         catch(error) {
             if (error.code === 'ENOENT') {
-            return new ApiResponse(HttpStatusCode.NotFound, null, "Not found");
+                return new ApiResponse(HttpStatusCode.NotFound, null, "Not found");
             }
         }
 
         return new ApiResponse(HttpStatusCode.NoContent, null, "Deleted");
+    }
+
+    async downloadMyFile(fileUrl: string) {
+        // const filePath = path.join(await this.getFolder(), fileUrl);
+
+        // fs.readFile(filePath, (err, data) => {
+        //       res.setHeader('Content-Disposition', `attachment; filename=${fileUrl}`);
+        //       res.writeHead(200, { 'Content-Type': 'application/octet-stream' });
+        //       res.end(data);
+        //   });
+        // }
     }
 
     private createUniqueFileUrl(filenameWithoutExtension: string): string {
